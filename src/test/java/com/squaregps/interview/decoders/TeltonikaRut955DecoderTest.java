@@ -41,7 +41,7 @@ class TeltonikaRut955DecoderTest {
 
     assertEquals(Boolean.FALSE, m.getDigitalInputStatus1());
     assertEquals(Boolean.TRUE, m.getDigitalInputStatus2());
-    assertEquals(Double.valueOf(770), m.getAnalogInput1());
-    assertEquals(1, m.getGsmLevel());
+    assertEquals(Double.valueOf(5.509), m.getAnalogInput1());
+    assertEquals(4, m.getGsmLevel());
   }
 }
