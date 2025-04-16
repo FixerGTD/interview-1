@@ -51,7 +51,7 @@ public class TeltonikaRut955Decoder implements MessageDecoder {
             CRC.calculateCRC(
                 CRC.Parameters.CRC16, crcBuf.array(), crcBuf.position(), crcBuf.remaining());
 
-        if ((crcCalculated & 0xFFFF) == (crcExpected & 0xFFFF)) {
+        if ((crcCalculated & 0xFFFF) == (crcExpected & 0xFFFF)) { // CRC is always unsigned 16-bit
           log.warn("CRC mismatch: expected {}, calculated {}", crcExpected, crcCalculated);
           return Collections.emptyList();
         }
