@@ -1,8 +1,8 @@
 package com.squaregps.interview.decoders;
 
-import com.github.snksoft.crc.CRC;
 import com.squaregps.interview.LocationMessage;
 import com.squaregps.interview.MessageDecoder;
+import com.squaregps.interview.tools.CRC16CCITTFalse;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -41,17 +41,16 @@ public class TeltonikaRut955Decoder implements MessageDecoder {
           return Collections.emptyList(); // Not enough data
         }
 
-        // Slice buffer for CRC check
-        ByteBuffer crcBuf = buf.slice();
-        crcBuf.limit(dataLength - 4); // exclude last 4 bytes (CRC)
-        buf.position(buf.position() + dataLength - 4); // move to CRC
+        int payloadLength = dataLength - 4; // CRC is always last 4 bytes
+
+        byte[] crcData = new byte[payloadLength];
+        buf.get(crcData); // read payload section
 
         crcExpected = buf.getInt();
-        long crcCalculated =
-            CRC.calculateCRC(
-                CRC.Parameters.CRC16, crcBuf.array(), crcBuf.position(), crcBuf.remaining());
 
-        if ((crcCalculated & 0xFFFF) != (crcExpected & 0xFFFF)) { // CRC is always unsigned 16-bit
+        long crcCalculated = CRC16CCITTFalse.calculate(crcData);
+
+        if ((crcCalculated & 0xFFFF) != (crcExpected & 0xFFFF)) {
           log.warn("CRC mismatch: expected {}, calculated {}", crcExpected, crcCalculated);
           return Collections.emptyList();
         }
